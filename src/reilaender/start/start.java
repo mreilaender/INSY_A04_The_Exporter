@@ -17,7 +17,7 @@ public class start {
 		parser.fillOptions();
 		parser.createParser(args);
 		parser.retrieveArgs();
-		if(args.length == 0 || args == null) {
+		if(args.length == 0 || args == null || parser.isMissing()) {
 			parser.printHelp(new PrintWriter(System.out));
 		}
 		else {
@@ -25,7 +25,7 @@ public class start {
 			String query = "SELECT " + parser.COLUMNS + " FROM " + parser.TABLENAME;
 			if(!(parser.SORT_FIELD.equals("")))
 				query += " ORDER BY " + parser.SORT_FIELD + parser.SORT_DIRECTION;
-			
+
 			//Connect
 			Connector con = new Connector(parser);
 			ResultSet rs = null;
@@ -54,33 +54,55 @@ public class start {
 					e.printStackTrace();
 				}
 			}
-			File f = new File("result.txt");
-			try {
-				//create file, printwriter
-				f.createNewFile();
-				PrintWriter pw = new PrintWriter(f);
-				
-				//Writer to the file
-				while(rs.next()) {
-					try {
-						for(int i = 1;true;++i) {
-							pw.print(rs.getString(i) + parser.DELIMITER);
+			if(parser.OUTPUT_FILENAME != null) {
+				File f = new File(parser.OUTPUT_FILENAME + ".txt");
+				try {
+					//create file, printwriter
+					f.createNewFile();
+					PrintWriter pw = new PrintWriter(f);
+
+					//Writer to the file
+					while(rs.next()) {
+						try {
+							for(int i = 1;true;++i) {
+								pw.print(rs.getString(i) + parser.DELIMITER);
+							}
+						} catch (SQLException e) {
+							//Last column reached
 						}
-					} catch (SQLException e) {
-						//Last column reached
+						pw.flush();
+						pw.println();
 					}
-					pw.flush();
-					pw.println();
+
+					//close writer
+					pw.close();
+
+					System.out.println("Successfully created File " + f.getAbsolutePath());
+				} catch(IOException e) {
+					System.err.println("Couldn't create file (maybe no permissions?).");
+					System.exit(0);
+				} catch (SQLException e) {
+					System.err.println("Couldn't fetch next Row (maybe the network connection broke).");
+					System.exit(0);
 				}
-				
-				//close writer
-				pw.close();
-				
-				System.out.println("Successfully created File " + f.getAbsolutePath());
-			} catch(IOException e) {
-				System.err.println("Couldn't create file (maybe no permissions?).");
-			} catch (SQLException e) {
-				System.err.println("Couldn't fetch next Row (maybe the network connection broke).");
+			} else {
+				try {
+					System.out.println("------- RESULT -------");
+					while(rs.next()) {
+						try {
+							for(int i = 1;true;++i) {
+								System.out.print(rs.getString(i) + parser.DELIMITER);
+							}
+						} catch (SQLException e) {
+							//Last column reached
+						}
+						System.out.println();
+					}
+					System.out.println("--------- RESULT END ---------");
+				} catch (SQLException e) {
+					System.err.println("Couldn't fetch next Row (maybe the network connection broke).");
+					System.exit(0);
+				}
 			}
 		}
 	}
