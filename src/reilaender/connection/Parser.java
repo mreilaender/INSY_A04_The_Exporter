@@ -23,7 +23,7 @@ public class Parser {
 			SORT_DIRECTION = "ASC",
 			FILTER = "",
 			DELIMITER = ";",
-			OUTPUT = null,
+			COLUMNS = null,
 			OUTPUT_FILENAME = null,
 			TABLENAME = null,
 			FILE_EXTENSION = null
@@ -103,7 +103,7 @@ public class Parser {
 		}
 		if(cmd.hasOption('s'))
 			SORT_FIELD = cmd.getOptionValue('s');
-		if(cmd.hasOption('r')) {
+		if(cmd.hasOption('r') && cmd.hasOption('s')) {
 			SORT_DIRECTION = cmd.getOptionValue('r');
 		}
 		if(cmd.hasOption('w')) {
@@ -113,18 +113,18 @@ public class Parser {
 			DELIMITER = cmd.getOptionValue('t');
 		}
 		if(cmd.hasOption('f')) {
-			OUTPUT = cmd.getOptionValue('f');
+			COLUMNS = cmd.getOptionValue('f');
+		} else {
+			System.err.println("No columns specified (-f)");
+			missing = true;
 		}
 		if(cmd.hasOption('o')) {
 			OUTPUT_FILENAME = cmd.getOptionValue('o');
 		}
 		if(cmd.hasOption('T')) {
 			TABLENAME = cmd.getOptionValue('T');
-		}
-		if(cmd.hasOption('F')) {
-			FILE_EXTENSION = cmd.getOptionValue('F');
 		} else {
-			System.err.println("File-Extension missing, please choose some (-F)");
+			System.err.println("Missing Tablename (-T)");
 			missing = true;
 		}
 		if(missing)
