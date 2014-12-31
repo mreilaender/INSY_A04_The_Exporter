@@ -1,0 +1,5 @@
+1|adapter|mysql|
+2|user|manuel|
+3|classname|path/to/someting|
+4|dsn|some;dsn|
+5|nix|drinn|
