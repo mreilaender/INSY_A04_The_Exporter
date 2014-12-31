@@ -81,7 +81,7 @@ public class Parser {
 	/**
 	 * Checks the options to be set and saves it in this class String statics
 	 */
-	public void retrieveArgs() {
+	public boolean retrieveArgs() {
 		if(cmd.hasOption('h'))
 			IP = cmd.getOptionValue('h');
 		if(cmd.hasOption('u'))
@@ -127,8 +127,10 @@ public class Parser {
 			System.err.println("Missing Tablename (-T)");
 			missing = true;
 		}
-		if(missing)
-			System.exit(0);
+		return missing;
+	}
+	public boolean isMissing() {
+		return missing;
 	}
 	public Console getConsole() {
 		return console;
